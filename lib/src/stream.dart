@@ -1,5 +1,9 @@
+import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
+import 'package:channel/channel.dart';
+
+import 'streamer.dart';
 
 import 'package:characters/characters.dart';
 
@@ -13,24 +17,14 @@ Future<dynamic> _parse(Stream<String> characters) {
   // TODO
 }
 
-class CharacterStreamer {
-  final Stream<String> _stream;
-
-  CharacterStreamer(this._stream);
-
-  Future<void> next() {
-    // TODO
-  }
-}
-
-Future<num> _parseNumber(Queue<String> characters) async {
+Future<num> _parseNumber(Streamer<String> characters) async {
   final sb = <String>[];
 
-  if (characters.isEmpty) {
-    throw FormatException();
+  if (await characters.first == null) {
+    throw FormatException('Unexpected end of JSON input');
   }
 
-  if (characters.first == '-') {
+  if (await characters.first == '-') {
     sb.add(characters.first);
     characters.removeFirst();
   }
@@ -57,3 +51,4 @@ Future<num> _parseNumber(Queue<String> characters) async {
 
   return num.parse(sb.join());
 }
+
