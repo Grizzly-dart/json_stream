@@ -36,7 +36,7 @@ class Streamer<T> {
     } else if (_finished) {
       return true;
     }
-    final completer = Completer<T>();
+    final completer = Completer<void>();
     _completer = completer;
     await completer.future;
     if (_queue.isNotEmpty) {
@@ -48,7 +48,9 @@ class Streamer<T> {
     }
   }
 
-  Future<T?> get first async {
+  Future<bool> get isNotEmpty async => !await isEmpty;
+
+  Future<T?> get waitFirst async {
     if (_completer != null) {
       throw Exception('concurrent reads not allowed');
     }
@@ -58,7 +60,7 @@ class Streamer<T> {
     } else if (_finished) {
       return null;
     }
-    final completer = Completer<T>();
+    final completer = Completer<void>();
     _completer = completer;
     await completer.future;
     if (_queue.isNotEmpty) {
@@ -70,7 +72,7 @@ class Streamer<T> {
     }
   }
 
-  Future<T?> get first async {
+  T? get first {
     if (_completer != null) {
       throw Exception('concurrent reads not allowed');
     }
@@ -80,16 +82,8 @@ class Streamer<T> {
     } else if (_finished) {
       return null;
     }
-    final completer = Completer<T>();
-    _completer = completer;
-    await completer.future;
-    if (_queue.isNotEmpty) {
-      return _queue.first;
-    } else if (_finished) {
-      return null;
-    } else {
-      throw Exception('unexpected internal state');
-    }
+
+    throw Exception('the buffer is empty');
   }
 
   T removeFirst() {

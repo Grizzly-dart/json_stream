@@ -1,0 +1,9 @@
+{
+  "int": 5,
+  "num": -0.5,
+  "string": "hello",
+  "bool": true,
+  "list": [1, 2, 3, 4, 5],
+  "map": {"key1":  "value1", "key2":  "value2"},
+  "null": null
+}
