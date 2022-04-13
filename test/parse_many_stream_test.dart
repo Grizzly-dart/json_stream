@@ -7,12 +7,12 @@ import 'package:test/test.dart';
 void main() {
   group('parse_stream.positive', () {
     test('string.basic', () async {
-      var file = File('data/string.json').openRead();
+      var file = File('data/json/string.json').openRead();
       final v = await parseStream(file.transform(utf8.decoder));
       expect(v, 'hello');
     });
     test('string.escaped', () async {
-      var file = File('data/string_escaped.json').openRead();
+      var file = File('data/json/string_escaped.json').openRead();
       final v = await parseStream(file.transform(utf8.decoder));
       expect(v, [
         "\\",
@@ -30,7 +30,7 @@ void main() {
       ]);
     });
     test('string.unicode', () async {
-      var file = File('data/string_escaped_unicode.json').openRead();
+      var file = File('data/json/string_escaped_unicode.json').openRead();
       final v = await parseStream(file.transform(utf8.decoder));
       expect(v, [
         "ॐ",
@@ -39,23 +39,23 @@ void main() {
       ]);
     });
     test('int.basic', () async {
-      var file = File('data/int.json').openRead();
+      var file = File('data/json/int.json').openRead();
       final v = await parseStream(file.transform(utf8.decoder));
       expect(v, 5);
       expect(v, isA<int>());
     });
     test('num.basic', () async {
-      var file = File('data/num.json').openRead();
+      var file = File('data/json/num.json').openRead();
       final v = await parseStream(file.transform(utf8.decoder));
       expect(v, 0.005);
     });
     test('null.basic', () async {
-      var file = File('data/null.json').openRead();
+      var file = File('data/json/null.json').openRead();
       final v = await parseStream(file.transform(utf8.decoder));
       expect(v, null);
     });
     test('list.basic', () async {
-      var file = File('data/list.json').openRead();
+      var file = File('data/json/list.json').openRead();
       final v = await parseStream(file.transform(utf8.decoder));
       expect(v, [
         145,
@@ -66,7 +66,7 @@ void main() {
       ]);
     });
     test('map.basic', () async {
-      var file = File('data/map.json').openRead();
+      var file = File('data/json/map.json').openRead();
       final v = await parseStream(file.transform(utf8.decoder));
       expect(v, {
         "int": 5,
@@ -81,32 +81,32 @@ void main() {
   });
   group('parse_stream.negative', () {
     test('empty', () async {
-      var file = File('data/negative/empty.json').openRead();
+      var file = File('data/json/negative/empty.json').openRead();
       expect(() async => await parseStream(file.transform(utf8.decoder)),
           throwsA(allOf(isA<FormatException>())));
     });
     test('empty.whitespaces', () async {
-      var file = File('data/negative/empty_whitespaces.json').openRead();
+      var file = File('data/json/negative/empty_whitespaces.json').openRead();
       expect(() async => await parseStream(file.transform(utf8.decoder)),
           throwsA(allOf(isA<FormatException>())));
     });
     test('true.partial', () async {
-      var file = File('data/negative/true_partial.json').openRead();
+      var file = File('data/json/negative/true_partial.json').openRead();
       expect(() async => await parseStream(file.transform(utf8.decoder)),
           throwsA(allOf(isA<FormatException>())));
     });
     test('false.partial', () async {
-      var file = File('data/negative/false_partial.json').openRead();
+      var file = File('data/json/negative/false_partial.json').openRead();
       expect(() async => await parseStream(file.transform(utf8.decoder)),
           throwsA(allOf(isA<FormatException>())));
     });
     test('null.partial', () async {
-      var file = File('data/negative/false_partial.json').openRead();
+      var file = File('data/json/negative/false_partial.json').openRead();
       expect(() async => await parseStream(file.transform(utf8.decoder)),
           throwsA(allOf(isA<FormatException>())));
     });
     test('int.wrong', () async {
-      var file = File('data/negative/int_wrong.json').openRead();
+      var file = File('data/json/negative/int_wrong.json').openRead();
       expect(() async => await parseStream(file.transform(utf8.decoder)),
           throwsA(allOf(isA<SyntaxException>())));
     });

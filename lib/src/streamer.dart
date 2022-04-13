@@ -10,6 +10,8 @@ class Streamer<T> {
 
   Completer<void>? _completer;
 
+  int _position = 0;
+
   Streamer(this._stream) {
     _stream.listen((event) {
       _queue.add(event);
@@ -25,6 +27,8 @@ class Streamer<T> {
       }
     });
   }
+
+  int get position => _position;
 
   Future<bool> get isEmpty async {
     if (_completer != null) {
@@ -99,6 +103,7 @@ class Streamer<T> {
       }
     }
 
+    _position++;
     return _queue.removeFirst();
   }
 }
