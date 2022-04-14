@@ -38,8 +38,9 @@ void _writeString(String v, StreamSink<String> sink) {
       sink.add(r'\n');
     } else if(c == '\t') {
       sink.add(r'\t');
+    } else {
+      sink.add(c);
     }
-    // TODO
   }
   sink.add('"');
 }
@@ -48,7 +49,8 @@ void _writeMap(Map<String, dynamic> map, StreamSink<String> sink) {
   sink.add('{');
 
   for(final entry in map.entries) {
-
+    _writeString(entry.key, sink);
+    // TODO
   }
 
   sink.add('}');
