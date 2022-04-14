@@ -7,43 +7,31 @@ import 'package:test/test.dart';
 void main() {
   group('parse_stream.positive', () {
     test('string.basic', () async {
-      var file = File('data/json/string.json').openRead();
-      final v = await parseStream(file.transform(utf8.decoder));
-      expect(v, 'hello');
-    });
-    test('string.escaped', () async {
-      var file = File('data/json/string_escaped.json').openRead();
-      final v = await parseStream(file.transform(utf8.decoder));
-      expect(v, [
-        "\\",
-        "\n",
-        "a\rb",
-        "\"",
-        "\"who",
-        "who\"",
-        "who\"is\"it",
-        "who\"\"is\"\"\"it",
-        "/",
-        "\b",
-        "\f",
-        "\t"
-      ]);
-    });
-    test('string.unicode', () async {
-      var file = File('data/json/string_escaped_unicode.json').openRead();
-      final v = await parseStream(file.transform(utf8.decoder));
-      expect(v, [
-        "ॐ",
-        "⌘",
-        "🤓"
-      ]);
+      var file = File('data/ndjson/string.jsonl').openRead();
+      final v = await parseManyStream(file.transform(utf8.decoder)).toList();
+      expect(v, ["hello", "\uD83C\uDF0D", "many\r\nlines\r\n"]);
     });
     test('int.basic', () async {
-      var file = File('data/json/int.json').openRead();
-      final v = await parseStream(file.transform(utf8.decoder));
-      expect(v, 5);
-      expect(v, isA<int>());
+      var file = File('data/ndjson/int.jsonl').openRead();
+      final v = await parseManyStream(file.transform(utf8.decoder)).toList();
+      expect(v, [-100, -1, 0, 1, 100]);
     });
+    test('all', () async {
+      var file = File('data/ndjson/ndjson.jsonl').openRead();
+      final v = await parseManyStream(file.transform(utf8.decoder)).toList();
+      expect(v, [
+        "string",
+        4352345,
+        134.456456e-4,
+        true,
+        {"key1": "value1", "key2": 3453},
+        [
+          {"key1": "value1", "key2": 3453},
+          "a"
+        ]
+      ]);
+    });
+    /*
     test('num.basic', () async {
       var file = File('data/json/num.json').openRead();
       final v = await parseStream(file.transform(utf8.decoder));
@@ -110,5 +98,6 @@ void main() {
       expect(() async => await parseStream(file.transform(utf8.decoder)),
           throwsA(allOf(isA<SyntaxException>())));
     });
+     */
   });
 }

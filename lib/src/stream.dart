@@ -10,6 +10,17 @@ Future<dynamic> parseStream(Stream<String> input) {
       .expand((element) => element)));
 }
 
+Stream<dynamic> parseManyStream(Stream<String> input) async* {
+  final characters = Streamer(input
+      .map((event) => event.characters.toList())
+      .expand((element) => element));
+
+  while (await characters.isNotEmpty) {
+    yield await _parseOne(characters);
+    await _skipWhiteSpace(characters);
+  }
+}
+
 Future<dynamic> _parse(Streamer<String> characters) async {
   final ret = await _parseOne(characters);
 

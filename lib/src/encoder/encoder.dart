@@ -1,57 +1,89 @@
-import 'dart:async';
 import 'package:characters/characters.dart';
 
-void encodeJSON(dynamic v, StreamSink<String> sink) {
-  if(v is num) {
-    sink.add(v.toString());
-  } else if(v == null) {
-    sink.add('null');
-  } else if(v is bool) {
-    sink.add(v.toString());
-  } else if(v is String) {
-    // TODO
-  } else if(v is Map<String, dynamic>) {
-    // TODO
-  } else if(v is List) {
-    // TODO
+String? encodeJSON(dynamic v, {StringSink? sink}) {
+  StringBuffer? sb;
+  sink ??= sb = StringBuffer();
+  _write(v, sink);
+  return sb?.toString();
+}
+
+void _write(dynamic v, StringSink sink) {
+  if (v is num) {
+    sink.write(v.toString());
+  } else if (v == null) {
+    sink.write('null');
+  } else if (v is bool) {
+    sink.write(v.toString());
+  } else if (v is String) {
+    _writeString(v, sink);
+  } else if (v is Map<String, dynamic>) {
+    _writeMap(v, sink);
+  } else if (v is List) {
+    _writeList(v, sink);
   } else {
     throw UnsupportedError('invalid type ${v.runtimeType}');
   }
 }
 
-void _writeString(String v, StreamSink<String> sink) {
-  sink.add('"');
-  for(final c in v.characters) {
-    if(c == r'\') {
-        sink.add(r'\\');
-    } else if(c == r'/') {
-      sink.add(r'\/');
-    } else if(c == r'"') {
-      sink.add(r'\"');
-    } else if(c == '\b') {
-      sink.add(r'\b');
-    } else if(c == '\f') {
-      sink.add(r'\f');
-    } else if(c == '\r') {
-      sink.add(r'\r');
-    } else if(c == '\n') {
-      sink.add(r'\n');
-    } else if(c == '\t') {
-      sink.add(r'\t');
+void _writeString(String v, StringSink sink) {
+  sink.write('"');
+  for (final c in v.characters) {
+    if (c == r'\') {
+      sink.write(r'\\');
+    } else if (c == r'/') {
+      sink.write(r'\/');
+    } else if (c == r'"') {
+      sink.write(r'\"');
+    } else if (c == '\b') {
+      sink.write(r'\b');
+    } else if (c == '\f') {
+      sink.write(r'\f');
+    } else if (c == '\r') {
+      sink.write(r'\r');
+    } else if (c == '\n') {
+      sink.write(r'\n');
+    } else if (c == '\t') {
+      sink.write(r'\t');
     } else {
-      sink.add(c);
+      sink.write(c);
     }
   }
-  sink.add('"');
+  sink.write('"');
 }
 
-void _writeMap(Map<String, dynamic> map, StreamSink<String> sink) {
-  sink.add('{');
+void _writeMap(Map<String, dynamic> map, StringSink sink) {
+  sink.write('{');
 
-  for(final entry in map.entries) {
+  final length = map.length;
+
+  int i = 1;
+  for (final entry in map.entries) {
     _writeString(entry.key, sink);
-    // TODO
+    sink.write(':');
+    _write(entry.value, sink);
+    if (i < length) {
+      sink.write(',');
+    }
+    i++;
   }
 
-  sink.add('}');
+  sink.write('}');
+}
+
+void _writeList(Iterable list, StringSink sink) {
+  sink.write('[');
+
+  final length = list.length;
+
+  int i = 1;
+  for (final entry in list) {
+    _write(entry, sink);
+
+    if (i < length) {
+      sink.write(',');
+    }
+    i++;
+  }
+
+  sink.write(']');
 }
