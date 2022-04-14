@@ -7,6 +7,22 @@ String? encodeJSON(dynamic v, {StringSink? sink}) {
   return sb?.toString();
 }
 
+String? encodeManyJSON(List<dynamic> values,
+    {StringSink? sink, String? prefix, String? suffix = '\n'}) {
+  StringBuffer? sb;
+  sink ??= sb = StringBuffer();
+  for (final v in values) {
+    if (prefix != null) {
+      sink.write(prefix);
+    }
+    _write(v, sink);
+    if (suffix != null) {
+      sink.write(suffix);
+    }
+  }
+  return sb?.toString();
+}
+
 void _write(dynamic v, StringSink sink) {
   if (v is num) {
     sink.write(v.toString());
