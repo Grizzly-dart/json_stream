@@ -1,17 +1,33 @@
 import 'package:characters/characters.dart';
 
-String? encodeJSON(dynamic v, {StringSink? sink}) {
+String? encode(dynamic v, {StringSink? sink}) {
   StringBuffer? sb;
   sink ??= sb = StringBuffer();
   _write(v, sink);
   return sb?.toString();
 }
 
-String? encodeManyJSON(List<dynamic> values,
+String? encodeMany(Iterable<dynamic> values,
     {StringSink? sink, String? prefix, String? suffix = '\n'}) {
   StringBuffer? sb;
   sink ??= sb = StringBuffer();
   for (final v in values) {
+    if (prefix != null) {
+      sink.write(prefix);
+    }
+    _write(v, sink);
+    if (suffix != null) {
+      sink.write(suffix);
+    }
+  }
+  return sb?.toString();
+}
+
+Future<String?> encodeManyStream(Stream<dynamic> values,
+    {StringSink? sink, String? prefix, String? suffix = '\n'}) async {
+  StringBuffer? sb;
+  sink ??= sb = StringBuffer();
+  await for (final v in values) {
     if (prefix != null) {
       sink.write(prefix);
     }
@@ -34,7 +50,7 @@ void _write(dynamic v, StringSink sink) {
     _writeString(v, sink);
   } else if (v is Map<String, dynamic>) {
     _writeMap(v, sink);
-  } else if (v is List) {
+  } else if (v is Iterable) {
     _writeList(v, sink);
   } else {
     throw UnsupportedError('invalid type ${v.runtimeType}');

@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:json_stream/json_stream.dart';
 
 Future<void> main() async {
-  print(encodeManyJSON([
+  print(encodeMany([
     "hello",
     5,
     5.56,
