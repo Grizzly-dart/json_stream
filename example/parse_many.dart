@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:json_stream/src/stream.dart';
+import 'package:json_stream/json_stream.dart';
 
 Future<void> main() async {
   var file = File('data/ndjson/int.jsonl').openRead();

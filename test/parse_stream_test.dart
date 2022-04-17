@@ -32,11 +32,7 @@ void main() {
     test('string.unicode', () async {
       var file = File('data/json/string_escaped_unicode.json').openRead();
       final v = await parseStream(file.transform(utf8.decoder));
-      expect(v, [
-        "ॐ",
-        "⌘",
-        "🤓"
-      ]);
+      expect(v, ["ॐ", "⌘", "🤓"]);
     });
     test('int.basic', () async {
       var file = File('data/json/int.json').openRead();

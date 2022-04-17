@@ -1,8 +1,11 @@
 import 'dart:async';
 
-import 'streamer.dart';
+import 'package:json_stream/json_stream.dart';
+
+import 'streamer_reader.dart';
 
 import 'package:characters/characters.dart';
+import 'package:json_stream/src/utils/utils.dart';
 
 Future<dynamic> parseStream(Stream<String> input) {
   return _parse(Streamer(input
@@ -16,13 +19,13 @@ Stream<dynamic> parseManyStream(Stream<String> input) async* {
       .expand((element) => element));
 
   while (await characters.isNotEmpty) {
-    yield await _parseOne(characters);
+    yield await _parseValue(characters);
     await _skipWhiteSpace(characters);
   }
 }
 
 Future<dynamic> _parse(Streamer<String> characters) async {
-  final ret = await _parseOne(characters);
+  final ret = await _parseValue(characters);
 
   await _skipWhiteSpace(characters);
 
@@ -33,7 +36,7 @@ Future<dynamic> _parse(Streamer<String> characters) async {
   return ret;
 }
 
-Future<dynamic> _parseOne(Streamer<String> characters) async {
+Future<dynamic> _parseValue(Streamer<String> characters) async {
   await _skipWhiteSpace(characters);
 
   if (await characters.isEmpty) {
@@ -90,7 +93,8 @@ Future<Map<String, dynamic>> _parseMap(Streamer<String> characters) async {
   }
 
   if (characters.first != "{") {
-    throw Exception("state error. expected '{' found '${characters.first}'");
+    throw Exception(
+        "StateError@${characters.position}: expected '{' found '${characters.first}'");
   } else {
     characters.removeFirst();
   }
@@ -129,7 +133,8 @@ Future<MapEntry<String, dynamic>> _parseMapRow(
   }
 
   if (characters.first != '"') {
-    throw Exception("state error. expected '\"' found ${characters.first}");
+    throw Exception(
+        "StateError@${characters.position}: expected '\"' found ${characters.first}");
   }
 
   final key = await _parseString(characters);
@@ -146,7 +151,7 @@ Future<MapEntry<String, dynamic>> _parseMapRow(
   }
 
   await _skipWhiteSpace(characters);
-  final value = await _parseOne(characters);
+  final value = await _parseValue(characters);
   await _skipWhiteSpace(characters);
 
   // Remove the trailing ','
@@ -177,7 +182,7 @@ Future<List<dynamic>> _parseList(Streamer<String> characters) async {
     if (characters.first == ']') {
       break;
     }
-    ret.add(await _parseOne(characters));
+    ret.add(await _parseValue(characters));
 
     await _skipWhiteSpace(characters);
 
@@ -369,32 +374,4 @@ Future<String> _unescape(Streamer<String> characters) async {
           "invalid string escape found '\\${characters.first}'",
           characters.position);
   }
-}
-
-extension on String {
-  bool get isHex {
-    if (codeUnits.length != 1) {
-      return false;
-    }
-    final code = codeUnitAt(0);
-    if (code >= 48 && code <= 57) {
-      return true;
-    } else if (code >= 97 && code <= 102) {
-      return true;
-    } else if (code >= 65 && code <= 70) {
-      return true;
-    }
-    return false;
-  }
-}
-
-class SyntaxException implements Exception {
-  final int offset;
-
-  final String message;
-
-  SyntaxException(this.message, this.offset);
-
-  @override
-  String toString() => 'Syntax error at $offset: $message';
 }
