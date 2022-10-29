@@ -5,7 +5,7 @@ import 'package:json_stream/json_stream.dart';
 import 'package:json_stream/src/decoder/queue_reader.dart';
 import 'package:json_stream/src/utils/utils.dart';
 
-dynamic parse(String input) {
+dynamic decode(String input) {
   final characters = SyncReader<String>(Queue.from(input.characters));
   final ret = _parseValue(characters);
   _skipWhiteSpace(characters);
